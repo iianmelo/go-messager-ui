@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ESS Front-end Next.js
+
+This is the Front-end base project in Next.js for the Software and Systems Engineering discipline, offered by the Informatics Center (CIn) of the Federal University of Pernambuco (UFPE).
+
+## Table of Contents
+
+1. [Getting Started](##getting-started)
+2. [Running the tests](#running-the-tests)
+3. [Scripts](#scripts)
+4. [Dependencies](#dependencies)
+5. [Architecture](#architecture)
 
 ## Getting Started
 
-First, run the development server:
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Prerequisites
+
+To run this project, you'll need to have the following software installed on your system:
+
+- Node.js
+- npm (Node Package Manager)
+
+### Installing
+
+Clone the repository and install the dependencies by running the following command in the project directory:
+
+```
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Running the App
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To start the app, run the following command:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+npm run dev
+```
 
-## Learn More
+This command will run the Next app in development with Next.js script.
+You can acess the app in the following URL: http://localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
+## Running the tests
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+There is one type of test configured in the base project: E2E acceptance tests using Playwright with Cucumber.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+To run E2E tests:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+npx cucumber-js
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Scripts
+
+The following scripts are available in the `package.json` file:
+
+- `dev`: Runs the app in development mode.
+- `build`: Compiles the TypeScript code.
+- `start`: Starts the app in production mode.
+- `lint`: Runs ESLint on your code.
+
+## Dependencies
+
+The following dependencies are used in the project:
+
+- [Next.js](https://nextjs.org/docs): Used by some of the world's largest companies, Next.js enables you to create full-stack Web applications by extending the latest React features, and integrating powerful Rust-based JavaScript tooling for the fastest builds.
+- [React](https://github.com/facebook/react): React is a JavaScript library for building user interfaces.
+- [Shadcn/ui](https://ui.shadcn.com/docs): Beautifully designed components that you can copy and paste into your apps. Accessible. Customizable. Open Source.
+- [Lucide Icons](https://lucide.dev/): Beautiful & consistent icons Made by the community.
+- [react-hook-form](https://github.com/react-hook-form/react-hook-form): React Hook Form is a library for React that simplifies form validation and input data handling.
+- [zod](https://github.com/colinhacks/zod): Zod is a TypeScript-first schema declaration and validation library. I'm using the term "schema" to broadly refer to any data type, from a simple string to a complex nested object.
+
+## Architecture
+
+To understand and learn more details about the structure of the project, click [here](./docs/architecture-pattern.md) to be redirected to the README that contains this information.
