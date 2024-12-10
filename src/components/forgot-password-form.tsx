@@ -39,7 +39,7 @@ export function ForgotPasswordForm() {
         </form>
         <div className="mt-4 text-center text-sm">
           Remember your password?{" "}
-          <Link href="/login" className="underline">
+          <Link href="/signin" className="underline">
             Log in
           </Link>
         </div>
