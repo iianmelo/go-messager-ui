@@ -33,5 +33,5 @@ Then: o usuário vê a mensagem "não há chats"
 Scenario: Entrar em um chat inexistente
 Given: o usuário "Ian Melo" está na página "lista de chats"
 And: possui chats ativos
-When: clica no chat "chat_999"
+When: Scenario Reajusted
 Then: o usuário vê a mensagem "chat não encontrado"
