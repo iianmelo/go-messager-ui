@@ -23,3 +23,15 @@ And: possui chats ativos
 When: clica no chat "chat_1"
 Then: o usuário entra no detalhamento da conversa do "chat_1"
 Then: Nova condiçao para o stakeholder
+
+Scenario: Entrar em um chat sem chats ativos
+Given: o usuário "Ian Melo" está na página "lista de chats"
+And: não há chats ativos para esse usuário
+When: clica no chat "chat_1"
+Then: o usuário vê a mensagem "não há chats"
+
+Scenario: Entrar em um chat inexistente
+Given: o usuário "Ian Melo" está na página "lista de chats"
+And: possui chats ativos
+When: clica no chat "chat_999"
+Then: o usuário vê a mensagem "chat não encontrado"
