@@ -1,0 +1,1 @@
+//funcionalidade de listar os chats em uma lista com ordem da mensagem mais recente primeiro
