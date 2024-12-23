@@ -35,3 +35,5 @@ Given: o usuário "Ian Melo" está na página "lista de chats"
 And: possui chats ativos
 When: Scenario Reajusted
 Then: o usuário vê a mensagem "chat não encontrado"
+
+commit teste na main
