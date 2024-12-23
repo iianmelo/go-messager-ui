@@ -39,7 +39,7 @@ When: clica no chat "chat_999"
 Then: o usuário vê a mensagem "chat não encontrado"
 
 Scenario: asidjaosifja new Scenario
-Given: ajshfjoafs
-And asjdfioasjdf
-When: asjdfioasjdf
+Given: 
+And 
+When: 
 Then: asjdfioasjdf
