@@ -34,3 +34,5 @@ Given: o usuário "Ian Melo" está na página "lista de chats"
 And: possui chats ativos
 When: clica no chat "chat_999"
 Then: o usuário vê a mensagem "chat não encontrado"
+
+// new commit on dev
