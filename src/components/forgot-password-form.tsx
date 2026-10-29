@@ -41,20 +41,20 @@ export function ForgotPasswordForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Forgot Password</CardTitle>
+        <CardTitle className="text-2xl">Esqueci a senha</CardTitle>
         <CardDescription>
-          Enter your email to reset your password
+          Informe o e-mail para receber o link de redefinição
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-mail</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="ana.bezerra@cin.ufpe.br"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -83,15 +83,15 @@ export function ForgotPasswordForm() {
                   ></path>
                 </svg>
               ) : (
-                "Reset Password"
+                "Enviar link"
               )}
             </Button>
           </div>
         </form>
         <div className="mt-4 text-center text-sm">
-          Remember your password?{" "}
+          Lembrou a senha?{" "}
           <Link href="/signin" className="underline">
-            Log in
+            Entrar
           </Link>
         </div>
       </CardContent>

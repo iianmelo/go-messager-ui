@@ -15,8 +15,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { SquarePen } from 'lucide-react';
 import { listUsers } from '@/services/users';
-import Image from 'next/image';
-import { ProfileIcon } from '@/assets';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export interface Contact {
 	name: string;
@@ -123,14 +122,20 @@ export function ListUserButton({ onNewChat }: ListUserButtonProps) {
 		}
 	};
 
+	const normalize = (value: string) =>
+		value
+			.toLowerCase()
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '');
+
 	const filteredContacts = contacts?.filter((contact) =>
-		contact.name.toLowerCase().includes(searchQuery.toLowerCase())
+		normalize(contact.name || '').includes(normalize(searchQuery))
 	);
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
-				<Button variant="outline" size="icon">
+				<Button variant="outline" size="icon" aria-label="Nova conversa">
 					<SquarePen className="h-5 w-5" />
 				</Button>
 			</DialogTrigger>
@@ -164,7 +169,7 @@ export function ListUserButton({ onNewChat }: ListUserButtonProps) {
 							Contato não encontrado
 						</div>
 					) : (
-						<ScrollArea className="h-[250px] rounded-md border">
+						<ScrollArea className="h-[340px] rounded-md border">
 							<div className="space-y-1 p-1">
 								{filteredContacts.map((contact) => (
 									<button
@@ -178,21 +183,25 @@ export function ListUserButton({ onNewChat }: ListUserButtonProps) {
 												: 'hover:bg-muted'
 										}`}
 									>
-										<Image
-											src={
-												contact.avatar ||
-												ProfileIcon
-											}
-											alt={`${contact.name}'s avatar`}
-											className="w-10 h-10 rounded-full object-cover"
-											width={40}
-											height={40}
-										/>
+										<Avatar className="h-10 w-10">
+											{contact.avatar ? (
+												<AvatarImage src={contact.avatar} alt={contact.name} />
+											) : null}
+											<AvatarFallback>
+												{(contact.name || '?').charAt(0)}
+											</AvatarFallback>
+										</Avatar>
 										<div className="flex-1 overflow-hidden">
 											<p className="font-medium truncate">
 												{contact.name}
 											</p>
-											<p className="text-sm truncate text-muted-foreground">
+											<p
+												className={`text-sm truncate ${
+													selectedContact?.id === contact.id
+														? 'text-primary-foreground/80'
+														: 'text-muted-foreground'
+												}`}
+											>
 												{contact.email}
 											</p>
 										</div>

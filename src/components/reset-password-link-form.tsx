@@ -15,22 +15,22 @@ export function ResetPasswordLinkForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Password Reset Link Sent</CardTitle>
+        <CardTitle className="text-2xl">Link enviado</CardTitle>
         <CardDescription>
-          It may take a few seconds for the email to arrive
+          O e-mail pode levar alguns segundos para chegar
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="text-center text-sm">
-          Changed your password?{" "}
+          Já redefiniu a senha?{" "}
           <Link href="/signin" className="underline">
-            Log in
+            Entrar
           </Link>
         </div>
         <div className="mt-4 text-center text-sm">
-          Didn&apos;t receive an email?{" "}
+          Não recebeu o e-mail?{" "}
           <Link href="/forgot-password" className="underline">
-            Try again
+            Tentar de novo
           </Link>
         </div>
       </CardContent>

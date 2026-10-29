@@ -67,8 +67,6 @@ export function ChatLayout({
   const [loading, setLoading] = useState(true);
   const setSelectedChatStore = useChatStore((state) => state.setSelectedChat);
 
-  console.log('selectedChat', selectedChat);
-
   const handleNewChat = (newChat: Chat) => {
     setChats((prevChats) => [...prevChats, newChat]);
     setSelectedChat(newChat);
@@ -80,19 +78,27 @@ export function ChatLayout({
       try {
         setLoading(true);
         const { data: individualChats } = await api.get('/chats/user');
-        const mappedIndividualChats = individualChats.map((chat: any) => ({
-          id: chat.id,
-          user_id: chat.user_id,
-          name: chat.user_id === chat.user.id ? chat.receiver.name : chat.user.name,
-          avatar: chat.user_id === chat.user.id ? chat.receiver.avatar : chat.user.avatar,
-          messages: chat.messages,
-          variant: 'secondary',
-          user: chat.user,
-          receiver_id: chat.receiver_id,
-          receiver: chat.receiver,
-          created_at: chat.created_at,
-          updated_at: chat.updated_at,
-        }));
+        const mappedIndividualChats = individualChats
+          .map((chat: any) => ({
+            id: chat.id,
+            user_id: chat.user_id,
+            name: chat.user_id === chat.user?.id ? chat.receiver?.name : chat.user?.name,
+            avatar: chat.user_id === chat.user?.id ? chat.receiver?.avatar : chat.user?.avatar,
+            messages: chat.messages || [],
+            variant: "secondary",
+            user: chat.user,
+            receiver_id: chat.receiver_id,
+            receiver: chat.receiver,
+            created_at: chat.created_at,
+            updated_at: chat.updated_at,
+          }))
+          .sort((a: Chat, b: Chat) => {
+            const lastTime = (chat: Chat) => {
+              const last = chat.messages?.[chat.messages.length - 1] as { time?: string } | undefined;
+              return new Date(last?.time || chat.updated_at || 0).getTime();
+            };
+            return lastTime(b) - lastTime(a);
+          });
         setChats(mappedIndividualChats);
         if (mappedIndividualChats.length > 0) {
           setSelectedChat(mappedIndividualChats[0]);
@@ -183,7 +189,7 @@ export function ChatLayout({
           />
         ) : (
           <div className="flex justify-center items-center h-full">
-            <p className="text-muted-foreground">Select a chat to start messaging</p>
+            <p className="text-muted-foreground">Selecione uma conversa para começar</p>
           </div>
         )}
       </ResizablePanel>

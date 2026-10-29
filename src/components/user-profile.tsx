@@ -67,7 +67,10 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, se
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await editUserInfo({ name: username, photo: photoUrl });
+      await editUserInfo({
+        name: username,
+        photo: typeof photoUrl === "string" ? photoUrl : "",
+      });
       setUpdate((prev) => !prev);
       onClose();
     } catch (error) {
@@ -81,11 +84,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, se
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>User Profile</DialogTitle>
-          <DialogDescription>Edit your profile information and click save.</DialogDescription>
+          <DialogTitle>Perfil</DialogTitle>
+          <DialogDescription>Edite suas informações e salve.</DialogDescription>
         </DialogHeader>
         {isLoading ? (
-          <div>Loading...</div>
+          <div>Carregando...</div>
         ) : (
           <>
             <div className="flex items-center gap-4 mb-4">
@@ -98,12 +101,12 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, se
                 className="hidden"
               />
             </div>
-            <Label>Username</Label>
+            <Label>Nome</Label>
             <Input value={username} onChange={(e) => setUsername(e.target.value)} />
           </>
         )}
         <DialogFooter>
-          <Button onClick={handleSave} disabled={isSaving}>{isSaving ? "Saving..." : "Save"}</Button>
+          <Button onClick={handleSave} disabled={isSaving}>{isSaving ? "Salvando..." : "Salvar"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -13,17 +13,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/services/auth";
+import { isDemoMode } from "@/services/api";
 import { useRouter } from "next/navigation";
 
-
 export function SigninForm() {
-
   const [email, setEmail] = useState("");
-  const [password, setpassword] = useState("");
-  const [warning, setWarning] = useState<string | null>(null); 
+  const [password, setPassword] = useState("");
+  const [warning, setWarning] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
@@ -32,8 +31,8 @@ export function SigninForm() {
       await login({ email, password });
       router.push("/chats");
     } catch (error) {
-      setWarning('Invalid email or password');
-      console.error('Error logging in:', error);
+      setWarning("E-mail ou senha inválidos");
+      console.error("Error logging in:", error);
     } finally {
       setIsLoading(false);
     }
@@ -42,20 +41,20 @@ export function SigninForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
+        <CardTitle className="text-2xl">Entrar</CardTitle>
         <CardDescription>
-          Enter details below to login to your account
+          Informe seus dados para acessar a conta
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-mail</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="ana.bezerra@cin.ufpe.br"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -63,21 +62,21 @@ export function SigninForm() {
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Senha</Label>
                 <Link href="/forgot-password" className="ml-auto inline-block text-sm underline">
-                  Forgot your password?
+                  Esqueceu a senha?
                 </Link>
               </div>
-              <Input 
-                id="password" 
+              <Input
+                id="password"
                 type="password"
                 value={password}
-                onChange={(f) => setpassword(f.target.value)} 
-                required 
+                onChange={(event) => setPassword(event.target.value)}
+                required
               />
             </div>
             <Button type="submit" className="w-full">
-            {isLoading ? (
+              {isLoading ? (
                 <svg
                   className="animate-spin h-5 w-5 text-white mx-auto"
                   xmlns="http://www.w3.org/2000/svg"
@@ -99,18 +98,23 @@ export function SigninForm() {
                   ></path>
                 </svg>
               ) : (
-                "Login"
+                "Entrar"
               )}
             </Button>
           </div>
           {warning && <p className="text-red-500 mt-2 text-sm">{warning}</p>}
         </form>
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
+          Não tem uma conta?{" "}
           <Link href="/signup" className="underline">
-            Sign up
+            Cadastre-se
           </Link>
         </div>
+        {isDemoMode && (
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            Modo demonstração: qualquer e-mail e senha entram. Defina NEXT_PUBLIC_API_URL para usar a API.
+          </p>
+        )}
       </CardContent>
     </Card>
   );

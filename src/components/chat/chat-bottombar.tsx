@@ -1,37 +1,33 @@
-import {
-  FileImage,
-  Mic,
-  Paperclip,
-  PlusCircle,
-  SendHorizontal,
-  ThumbsUp,
-} from "lucide-react";
-import Link from "next/link";
+import { SendHorizontal } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, buttonVariants } from "../ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "framer-motion";
-import { Message, loggedInUserData } from "@/app/data";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Message } from "@/app/data";
 import { ChatInput } from "@/components/ui/chat/chat-input";
 import useChatStore from "@/hooks/use-chat-store";
 import { useChatSocket } from "@/hooks/use-chat-socket";
+
+function currentSender() {
+  if (typeof window === "undefined") return { name: "Você", avatar: "" };
+  try {
+    const raw = window.localStorage.getItem("authUser");
+    if (!raw) return { name: "Você", avatar: "" };
+    const user = JSON.parse(raw) as { name?: string; avatar?: string };
+    return { name: user.name || "Você", avatar: user.avatar || "" };
+  } catch {
+    return { name: "Você", avatar: "" };
+  }
+}
 
 interface ChatBottombarProps {
   isMobile: boolean;
 }
 
-export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
-
-export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
+export default function ChatBottombar(_props: ChatBottombarProps) {
   const [message, setMessage] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const setMessages = useChatStore((state) => state.setMessages);
-  const hasInitialResponse = useChatStore((state) => state.hasInitialResponse);
-  const setHasInitialResponse = useChatStore(
-    (state) => state.setHasInitialResponse,
-  );
-  const [isLoading, setisLoading] = useState(false);
+  const isLoading = false;
   const selectedChat = useChatStore((state) => state.selectedChat);
   const { sendMessage: sendWebSocketMessage } = useChatSocket(selectedChat?.receiver_id || 0);
 
@@ -39,29 +35,19 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
     setMessage(event.target.value);
   };
 
-  const handleThumbsUp = () => {
-    const newMessage: Message = {
-      id: Date.now(),
-      name: loggedInUserData.name,
-      avatar: loggedInUserData.avatar,
-      message: "👍",
-      timestamp: new Date().toLocaleTimeString(),
-      isSender: true
-    };
-    setMessages((prev) => [...prev, newMessage]);
-    sendWebSocketMessage("👍");
-    setMessage("");
-  };
-
   const handleSend = () => {
     if (message.trim()) {
+      const sender = currentSender();
       const newMessage: Message = {
         id: Date.now(),
-        name: loggedInUserData.name,
-        avatar: loggedInUserData.avatar,
+        name: sender.name,
+        avatar: sender.avatar,
         message: message.trim(),
-        timestamp: new Date().toLocaleTimeString(),
-        isSender: true
+        timestamp: new Date().toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        isSender: true,
       };
       setMessages((prev) => [...prev, newMessage]);
       sendWebSocketMessage(message.trim());
@@ -115,9 +101,20 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
             onKeyDown={handleKeyPress}
             onChange={handleInputChange}
             placeholder="Escreva uma mensagem..."
-            className="rounded-md max-h-2"
+            className="rounded-md"
           />
         </motion.div>
+        <Button
+          className="h-9 w-9 shrink-0"
+          onClick={handleSend}
+          disabled={isLoading || !message.trim()}
+          variant="ghost"
+          size="icon"
+          aria-label="Enviar"
+          type="button"
+        >
+          <SendHorizontal size={22} className="text-muted-foreground" />
+        </Button>
       </AnimatePresence>
     </div>
   );

@@ -1,41 +1,38 @@
 import api from "./api";
 
 interface SignupProps {
-    name: string;
-    email: string;
-    password: string;
-    photo_url: string;
+  name: string;
+  email: string;
+  password: string;
+  photo_url: string;
 }
 
 interface LoginProps {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
+const signup = async (data: SignupProps) => {
+  const response = await api.post("/auth/sign-up", data);
+  return response.data;
+};
 
-const signup = async (data:SignupProps) => {
-  try {
-    const response = await api.post("/auth/sign-up", data);
-    return response.data;
-  } catch (error) {
-    throw error;
+const login = async (data: LoginProps) => {
+  const response = await api.post("/auth", data);
+  const token = response.data.token;
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem("authToken", token);
+    if (response.data.user) {
+      window.localStorage.setItem("authUser", JSON.stringify(response.data.user));
+    }
   }
-}
-
-const login = async (data:LoginProps) => {
-  try {
-    const response = await api.post("/auth", data);
-    const token = response.data.token;
-    localStorage.setItem("authToken", token);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-}
+  return response.data;
+};
 
 const isAuthenticated = () => {
-  const token = localStorage.getItem("authToken");
-  return !!token; // Retorna true se o token estiver presente, caso contrário, false
-}
+  if (typeof window === "undefined") return false;
+  const token = window.localStorage.getItem("authToken");
+  return !!token;
+};
 
 export { signup, login, isAuthenticated };

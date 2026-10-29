@@ -47,14 +47,14 @@ export function SignupForm() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setLoading(true);
     if (!passwordsMatch) return;
+    setLoading(true);
     try {
       const response = await signup({
         name,
         email,
         password,
-        photo_url: profilePicture as string,
+        photo_url: typeof profilePicture === "string" ? profilePicture : "",
       });
 
       console.log(response);
@@ -66,8 +66,8 @@ export function SignupForm() {
       router.push("/signin");
     } catch (error) {
       console.error(error);
-      alert("An error occurred. Please try again.");
-    }finally{
+      alert("Não foi possível criar a conta. Tente de novo.");
+    } finally {
       setLoading(false);
     }
   };
@@ -76,13 +76,13 @@ export function SignupForm() {
   return (
     <Card className=" max-w-lg w-full p-6">
       <CardHeader>
-        <CardTitle className="text-2xl">Sign Up</CardTitle>
-        <CardDescription>Create an account to join our community</CardDescription>
+        <CardTitle className="text-2xl">Criar conta</CardTitle>
+        <CardDescription>Cadastre-se para entrar na comunidade</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <div className="grid gap-2">
-            <Label htmlFor="profile_picture">Profile Picture</Label>
+            <Label htmlFor="profile_picture">Foto de perfil</Label>
             <Input
               ref={fileInputRef}
               id="profile_picture"
@@ -90,30 +90,30 @@ export function SignupForm() {
               accept="image/*"
               onChange={handleUpload}
               className="cursor-pointer hidden" />
-            {profilePicture && <Image src={profilePicture} width={90} height={0} alt="Profile Picture" onClick={handleFileInput} className="rounded-full mx-auto border-2 border-primary cursor-pointer hover:opacity-60" />}
+            {profilePicture && <Image src={profilePicture} width={90} height={90} alt="Foto de perfil" onClick={handleFileInput} className="rounded-full mx-auto border-2 border-primary cursor-pointer hover:opacity-60 object-cover" />}
             <div className="grid gap-2">
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="name">Nome *</Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="John Doe"
+                placeholder="Ana Bezerra"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email">E-mail *</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="ana.bezerra@cin.ufpe.br"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password *</Label>
+              <Label htmlFor="password">Senha *</Label>
               <Input
                 id="password"
                 type="password"
@@ -123,7 +123,7 @@ export function SignupForm() {
               />
             </div>
             <div className="grid gap-2 mb-4">
-              <Label htmlFor="confirm_password">Confirm Password *</Label>
+              <Label htmlFor="confirm_password">Confirmar senha *</Label>
               <Input
                 id="confirm_password"
                 type="password"
@@ -133,7 +133,7 @@ export function SignupForm() {
                 className={!passwordsMatch ? "border-red-500" : ""}
               />
               {!passwordsMatch && (
-                <p className="text-red-500 text-sm">Passwords do not match</p>
+                <p className="text-red-500 text-sm">As senhas não coincidem</p>
               )}
             </div>
             <Button
@@ -163,15 +163,15 @@ export function SignupForm() {
                   ></path>
                 </svg>
               ) : (
-                "Sign Up"
+                "Criar conta"
               )}
             </Button>
           </div>
         </form>
         <div className="mt-4 text-center text-sm">
-          Already have an account?{" "}
+          Já tem uma conta?{" "}
           <Link href="/signin" className="underline">
-            Log in
+            Entrar
           </Link>
         </div>
       </CardContent>

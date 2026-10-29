@@ -3,6 +3,27 @@ import { useEffect, useRef } from "react";
 import useChatStore from "@/hooks/use-chat-store";
 import { Message } from "@/app/data";
 
+function resolveWebSocketUrl(token: string): string | null {
+  const explicit = process.env.NEXT_PUBLIC_WS_URL || process.env.WS_URL;
+  if (explicit) {
+    const join = explicit.includes("?") ? "&" : "?";
+    return `${explicit}${join}token=${encodeURIComponent(token)}`;
+  }
+
+  const api = process.env.NEXT_PUBLIC_API_URL;
+  if (!api || api.startsWith("/")) return null;
+
+  try {
+    const url = new URL(api);
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    url.pathname = "/chats";
+    url.search = `token=${encodeURIComponent(token)}`;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
 export const useChatSocket = (receiverId: number) => {
   const socketRef = useRef<WebSocket | null>(null);
   const setMessages = useChatStore((state) => state.setMessages);
@@ -13,10 +34,12 @@ export const useChatSocket = (receiverId: number) => {
     const token = localStorage.getItem("authToken");
 
     if (!token) {
-      console.error("Token não encontrado no localStorage.");
       return;
     }
-    const wsUrl = `wss://go-messenger.onrender.com/chats?token=${token}`;
+    const wsUrl = resolveWebSocketUrl(token);
+    if (!wsUrl) {
+      return;
+    }
     const socket = new WebSocket(wsUrl);
     socketRef.current = socket;
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { GolangIcon, ProfileIcon } from '@/assets';
+import { GolangIcon } from '@/assets';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
@@ -88,28 +88,15 @@ export function Sidebar({
 		fetchUserProfile();
 	}, [update]);
 
-  // filter chats by search term
-  const filteredChats = chats.filter((chat) =>
-    chat.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
 
-	const mappedIndividualChats = filteredChats.map((chat: any) => ({
-		id: chat.id,
-		user_id: chat.user_id,
-		name:
-			chat.user_id === chat.user.id ? chat.receiver.name : chat.user.name,
-		avatar:
-			chat.user_id === chat.user.id
-				? chat.receiver.avatar
-				: chat.user.avatar,
-		messages: chat.messages,
-		variant: 'secondary',
-		user: chat.user,
-		receiver_id: chat.receiver_id,
-		receiver: chat.receiver,
-		created_at: chat.created_at,
-		updated_at: chat.updated_at,
-	}));
+  const filteredChats = chats.filter((chat) =>
+    normalize(chat.name || "").includes(normalize(searchTerm))
+  );
 
 	return (
 		<div
@@ -177,14 +164,14 @@ export function Sidebar({
 													)}
 												>
 													<Avatar className="h-9 w-9">
-														<AvatarImage
-															src={chat.avatar}
-															alt={chat.name}
-														/>
+														{chat.avatar ? (
+															<AvatarImage
+																src={chat.avatar}
+																alt={chat.name}
+															/>
+														) : null}
 														<AvatarFallback>
-															{chat.name.charAt(
-																0
-															)}
+															{(chat.name || "?").charAt(0)}
 														</AvatarFallback>
 													</Avatar>
 													<span className="sr-only">
@@ -218,19 +205,21 @@ export function Sidebar({
 										)}
 									>
 										<Avatar>
-											<AvatarImage
-												src={chat.avatar}
-												alt={chat.name}
-											/>
+											{chat.avatar ? (
+												<AvatarImage
+													src={chat.avatar}
+													alt={chat.name}
+												/>
+											) : null}
 											<AvatarFallback>
-												{chat.name.charAt(0)}
+												{(chat.name || "?").charAt(0)}
 											</AvatarFallback>
 										</Avatar>
 										<div className="flex flex-col items-start text-left overflow-hidden">
 											<span className="font-medium">
 												{chat.name}
 											</span>
-											{chat.messages.length > 0 && (
+											{(chat.messages?.length || 0) > 0 && (
 												<span className="text-xs text-muted-foreground truncate max-w-[150px]">
 													{chat.messages[
 														chat.messages.length - 1
@@ -252,21 +241,31 @@ export function Sidebar({
 								<div className="bg-muted/30 p-4 rounded-full mb-4">
 									<MessageSquare className="h-8 w-8 text-muted-foreground" />
 								</div>
-								<h3 className="font-medium mb-1">
-									Nenhum chat encontrado
-								</h3>
-								<p className="text-sm text-muted-foreground mb-4">
-									Não encontramos nenhum chat com o termo
-									pesquisado.
-								</p>
-								{searchTerm && (
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => setSearchTerm('')}
-									>
-										Limpar pesquisa
-									</Button>
+								{searchTerm ? (
+									<>
+										<h3 className="font-medium mb-1">
+											Nenhum chat encontrado
+										</h3>
+										<p className="text-sm text-muted-foreground mb-4">
+											Não encontramos nenhum chat com o termo pesquisado.
+										</p>
+										<Button
+											variant="outline"
+											size="sm"
+											onClick={() => setSearchTerm("")}
+										>
+											Limpar pesquisa
+										</Button>
+									</>
+								) : (
+									<>
+										<h3 className="font-medium mb-1">
+											Nenhuma conversa ainda
+										</h3>
+										<p className="text-sm text-muted-foreground">
+											Comece uma conversa pela lista de contatos.
+										</p>
+									</>
 								)}
 							</div>
 						)}
@@ -284,8 +283,10 @@ export function Sidebar({
 					)}
 				>
 					<Avatar className="h-10 w-10">
-						<AvatarImage src={data?.avatar || ProfileIcon} alt={data?.name} />
-						<AvatarFallback>{data?.name?.charAt(0)}</AvatarFallback>
+						{data?.avatar ? (
+							<AvatarImage src={data.avatar} alt={data?.name} />
+						) : null}
+						<AvatarFallback>{data?.name?.charAt(0) || "A"}</AvatarFallback>
 					</Avatar>
 					{!isCollapsed && (
 						<div className="flex flex-col items-start">
