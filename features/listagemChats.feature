@@ -37,6 +37,3 @@ When: Scenario Reajusted
 Then: o usuário vê a mensagem "chat não encontrado"
 When: clica no chat "chat_999"
 Then: o usuário vê a mensagem "chat não encontrado"
-
-new commit on dev
-commit teste na main

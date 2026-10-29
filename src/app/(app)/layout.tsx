@@ -1,29 +1,24 @@
-import { Inter } from "next/font/google";
+import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
+import ProtectedRoute from "@/components/protected-route";
 
-const inter = Inter({ subsets: ["latin"] });
+export const metadata: Metadata = {
+  title: "Go Messager",
+  description: "Chat/message components for Go Messager",
+};
 
-import { AppSidebar } from "@/components/app-sidebar";
-
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
-
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AppLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="pt-br">
-      <body className={inter.className}>
-        <SidebarProvider
-          style={
-            {
-              "--sidebar-width": "350px",
-            } as React.CSSProperties
-          }
-        >
-          <AppSidebar />
-          <SidebarInset>{children}</SidebarInset>
-        </SidebarProvider>
-      </body>
-    </html>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <main className="flex h-[calc(100dvh)] flex-col">
+        <div className="z-10 border rounded-lg w-full h-full text-sm flex">
+          <ProtectedRoute>{children}</ProtectedRoute>
+        </div>
+      </main>
+    </ThemeProvider>
   );
 }

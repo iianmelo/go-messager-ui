@@ -1,76 +1,114 @@
-# ESS Front-end Next.js
+# Go Message
 
-This is the Front-end base project in Next.js for the Software and Systems Engineering discipline, offered by the Informatics Center (CIn) of the Federal University of Pernambuco (UFPE).
+Interface web do **Go Message**, o mensageiro do trabalho de **Engenharia de Software e Sistemas** do Centro de Informática (CIn) da UFPE, em dezembro de 2024. A pessoa entra, vê as conversas e troca mensagens. O serviço por trás é a API em Go do repositório [iianmelo/go-messenger](https://github.com/iianmelo/go-messenger).
 
-## Table of Contents
+Este repositório é um fork de [felipetmacedo/go-messager-ui](https://github.com/felipetmacedo/go-messager-ui), o projeto-base de front-end da disciplina. O histórico da base (login, cadastro, lista de chats, perfil e integração com a API) permanece no upstream.
 
-1. [Getting Started](##getting-started)
-2. [Running the tests](#running-the-tests)
-3. [Scripts](#scripts)
-4. [Dependencies](#dependencies)
-5. [Architecture](#architecture)
+## Stack
 
-## Getting Started
+- [Next.js 14](https://nextjs.org/docs) (App Router) e React 18
+- [Tailwind CSS](https://tailwindcss.com/) e [shadcn/ui](https://ui.shadcn.com/)
+- Axios para o HTTP
+- Zustand para o estado da conversa aberta
+- Playwright e Cucumber para os testes de aceitação que já vinham na base
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+A API companheira usa Go com Fiber, autenticação no Firebase e PostgreSQL.
 
-### Prerequisites
+## Telas
 
-To run this project, you'll need to have the following software installed on your system:
+Entrar. Sem `NEXT_PUBLIC_API_URL`, qualquer e-mail e senha abrem a demonstração.
 
-- Node.js
-- npm (Node Package Manager)
+![Tela de entrar](docs/screenshots/screenshot_entrar.png)
 
-### Installing
+Cadastro.
 
-Clone the repository and install the dependencies by running the following command in the project directory:
+![Tela de cadastro](docs/screenshots/screenshot_cadastro.png)
 
-```
+Recuperação de senha.
+
+![Tela de esqueci a senha](docs/screenshots/screenshot_esqueci_senha.png)
+
+Conversas, com os dados de demonstração em português.
+
+![Lista de conversas](docs/screenshots/screenshot_conversas.png)
+
+Pesquisa por nome na lista.
+
+![Pesquisa de chats](docs/screenshots/screenshot_pesquisa.png)
+
+Contatos para começar uma conversa.
+
+![Lista de contatos](docs/screenshots/screenshot_contatos.png)
+
+Perfil da conta logada.
+
+![Perfil](docs/screenshots/screenshot_perfil.png)
+
+## Como executar
+
+É preciso Node.js 20 ou superior.
+
+```bash
+git clone https://github.com/iianmelo/go-messager-ui.git
+cd go-messager-ui
 npm install
-```
-
-### Running the App
-
-To start the app, run the following command:
-
-```
 npm run dev
 ```
 
-This command will run the Next app in development with Next.js script.
-You can acess the app in the following URL: http://localhost:3000
+A aplicação sobe em [http://localhost:8080](http://localhost:8080). A raiz redireciona para `/signin`.
 
-## Running the tests
+Sem variável de ambiente, o login não chama a rede. O cliente usa dados locais (Ana Bezerra e as conversas acima) para a demonstração funcionar sozinha. Para falar com a API:
 
-There is one type of test configured in the base project: E2E acceptance tests using Playwright with Cucumber.
-
-
-To run E2E tests:
-
+```bash
+cp .env.example .env.local
 ```
+
+```bash
+NEXT_PUBLIC_API_URL=https://seu-host-da-api
+NEXT_PUBLIC_WS_URL=wss://seu-host-da-api/chats
+```
+
+`NEXT_PUBLIC_API_URL` é a base do Axios (`POST /auth`, usuários e chats). `NEXT_PUBLIC_WS_URL` é opcional; se ficar vazio e a API for `http` ou `https`, o socket é montado no mesmo host, em `/chats`. No modo demonstração o WebSocket não abre.
+
+Build e servidor de produção:
+
+```bash
+npm run build
+npm start
+```
+
+`npm start` escuta a porta 3000.
+
+Os testes de aceitação da base:
+
+```bash
 npx cucumber-js
 ```
 
-## Scripts
+## Arquitetura
 
-The following scripts are available in the `package.json` file:
+O navegador renderiza o Next.js. Com a URL da API definida, o login, o perfil, a lista de usuários e os chats saem por HTTP, e as mensagens novas seguem por WebSocket. A API em Go autentica no Firebase e persiste no PostgreSQL. Sem a URL, o próprio front responde com o adaptador de demonstração e nada disso é chamado.
 
-- `dev`: Runs the app in development mode.
-- `build`: Compiles the TypeScript code.
-- `start`: Starts the app in production mode.
-- `lint`: Runs ESLint on your code.
+```mermaid
+flowchart LR
+  subgraph navegador [Navegador]
+    ui[Next.js App Router]
+  end
+  subgraph api [go-messenger]
+    fiber[Go Fiber]
+    firebase[Firebase Auth]
+    postgres[(PostgreSQL)]
+  end
+  ui -->|"REST, se NEXT_PUBLIC_API_URL existir"| fiber
+  ui -->|WebSocket /chats| fiber
+  fiber --> firebase
+  fiber --> postgres
+```
 
-## Dependencies
+## Publicação
 
-The following dependencies are used in the project:
+O endereço antigo [go-message-iota.vercel.app](https://go-message-iota.vercel.app) responde 404 com `x-vercel-error: DEPLOYMENT_NOT_FOUND`: o deployment da Vercel associado a esse alias não existe mais. Não é uma rota da aplicação. Além disso, o `yarn.lock` que estava no repositório não batia com o `package.json` (`next` 14.2.25 no lock, 14.0.2 no manifesto). A Vercel prefere o Yarn quando os dois locks existem e instala com lock congelado, então o build nem chegava a gerar um deployment. Os locks foram regenerados para o `package.json` atual. Um novo deploy na Vercel precisa ser criado à parte; o código não recria um projeto apagado.
 
-- [Next.js](https://nextjs.org/docs): Used by some of the world's largest companies, Next.js enables you to create full-stack Web applications by extending the latest React features, and integrating powerful Rust-based JavaScript tooling for the fastest builds.
-- [React](https://github.com/facebook/react): React is a JavaScript library for building user interfaces.
-- [Shadcn/ui](https://ui.shadcn.com/docs): Beautifully designed components that you can copy and paste into your apps. Accessible. Customizable. Open Source.
-- [Lucide Icons](https://lucide.dev/): Beautiful & consistent icons Made by the community.
-- [react-hook-form](https://github.com/react-hook-form/react-hook-form): React Hook Form is a library for React that simplifies form validation and input data handling.
-- [zod](https://github.com/colinhacks/zod): Zod is a TypeScript-first schema declaration and validation library. I'm using the term "schema" to broadly refer to any data type, from a simple string to a complex nested object.
+## Contexto
 
-## Architecture
-
-To understand and learn more details about the structure of the project, click [here](./docs/architecture-pattern.md) to be redirected to the README that contains this information.
+Trabalho da disciplina **Engenharia de Software e Sistemas**, CIn-UFPE, dezembro de 2024. A base de front-end foi publicada por Felipe Macedo em [felipetmacedo/go-messager-ui](https://github.com/felipetmacedo/go-messager-ui). A API está em [iianmelo/go-messenger](https://github.com/iianmelo/go-messenger).
